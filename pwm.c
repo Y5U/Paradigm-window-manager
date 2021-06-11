@@ -188,6 +188,8 @@ Tile(int args[2])
 	Window parent, root, *children;
 	unsigned int nChild;
 	XWindowAttributes attrs;
+
+	checkWindows();
 	Window windows[WINDOWLENGTH];
 	memcpy(windows, workspace[CM][CW], WINDOWLENGTH);
 
@@ -258,6 +260,7 @@ SWWindow(void)
 {
 	if(arrSize(workspace[CM][CW]) < 1)
 			return;
+	checkWindows();
 	/* window variables */
 	unsigned int nChild;
 	XWindowAttributes attrs;
