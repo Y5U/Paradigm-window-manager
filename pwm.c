@@ -23,9 +23,6 @@
 static int 		sel[MONITORLENGTH][WORKSPACELENGTH];/* Selected window */
 static int		CM = 0;					/* current monitor */
 static int		CW = 0;					/* current workpace */
-static int 		nSections = 1;
-static int 		sections[15][4]; 			/* x, y, width, height */
-//static int 		selSec = 0; 				/* selected section */
 static int		mode = 0;				/* tiling(0) or floating(1) */
 static bool 		cmdMD = false; 				/* Command mode */
 static Window 		workspace[MONITORLENGTH][WORKSPACELENGTH][WINDOWLENGTH]; /* monitor, workspace, windows */
@@ -243,98 +240,6 @@ Tile(int args[10])
 			}
 		}
 	} 
-}
-
-void
-section(int args[10])
-{
-	/* args[0] = remove(0), add(1), resize(2) */
-	/* args[1] = vertical/smaller(0), horizontal/bigger(1) */
-	XWindowAttributes attrs;
-
-	for(int i = 0; i < arrSize(workspace[CM][CW]); i++){
-		XGetWindowAttributes(dpy, workspace[CM][CW][i], &attrs);
-
-		sections[i][0] = attrs.x;
-		sections[i][1] = attrs.y;
-		sections[i][2] = attrs.width;
-		sections[i][3] = attrs.height;
-	}
-
-	/* remove */
-	if(args[0] == 0){
-		if(nSections-- == 1) nSections = 1;
-		
-		/* printf("sel: %d, sel -1: %d\n", sel, sel - 1);
-		printf("before: %d\n", sections[sel - 1][2]);
-		*/
-		if(sel[CM][CW] != 0)
-			sections[sel[CM][CW] - 1][2] += sections[sel[CM][CW]][2];
-		else {
-			XLowerWindow(dpy, workspace[CM][CW][sel[CM][CW]]);
-			sections[sel[CM][CW] + 1][0] = sections[sel[CM][CW]][0];
-			sections[sel[CM][CW] + 1][2] += sections[sel[CM][CW]][2];
-		}
-
-		//printf("after: %d\n", sections[sel[CM][CW] - 1][2]);
-	}
-	/* add */
-	else if(args[0] == 1){
-		if(nSections++ == 15) nSections = 15;
-
-		if(args[1] == 1){
-			if(sections[sel[CM][CW]][2] > 60){
-				HORIZ_HALVE_SEC(sections[sel[CM][CW]]);
-				if(checkArr(workspace[CM][CW], workspace[CM][CW][sel[CM][CW] + 1], arrSize(workspace[CM][CW]))){
-					sections[sel[CM][CW] + 1][0] = sections[sel[CM][CW]][0] + sections[sel[CM][CW]][2]; 	/* x */
-					sections[sel[CM][CW] + 1][1] = sections[sel[CM][CW]][1]; 			/* y */
-					sections[sel[CM][CW] + 1][2] = sections[sel[CM][CW]][2];			/* width */
-					sections[sel[CM][CW] + 1][3] = sections[sel[CM][CW]][3];			/* height */
-				}
-				else if(checkArr(workspace[CM][CW], workspace[CM][CW][sel[CM][CW] - 1], arrSize(workspace[CM][CW]))){
-					sections[sel[CM][CW] - 1][0] = sections[sel[CM][CW]][0] + sections[sel[CM][CW]][2]; 	/* x */
-					sections[sel[CM][CW] - 1][1] = sections[sel[CM][CW]][1]; 			/* y */
-					sections[sel[CM][CW] - 1][2] = sections[sel[CM][CW]][2];			/* width */
-					sections[sel[CM][CW] - 1][3] = sections[sel[CM][CW]][3];			/* height */
-				}
-			}
-			//printf("after: %d, sel = %d\n", sections[sel][2], sel);
-		}
-		else if(args[1] == 0){
-			if(sections[sel[CM][CW]][3] > 60){
-				VERT_HALVE_SEC(sections[sel[CM][CW]]);
-				if(checkArr(workspace[CM][CW], workspace[CM][CW][sel[CM][CW] + 1], arrSize(workspace[CM][CW]))){
-					sections[sel[CM][CW] + 1][0] = sections[sel[CM][CW]][0];		 	/* x */
-					sections[sel[CM][CW] + 1][1] = sections[sel[CM][CW]][1] + sections[sel[CM][CW]][3]; 	/* y */
-					sections[sel[CM][CW] + 1][2] = sections[sel[CM][CW]][2];			/* width */
-					sections[sel[CM][CW] + 1][3] = sections[sel[CM][CW]][3];			/* height */
-				}
-				else if(checkArr(workspace[CM][CW], workspace[CM][CW][sel[CM][CW] - 1], arrSize(workspace[CM][CW]))){
-					sections[sel[CM][CW] - 1][0] = sections[sel[CM][CW]][0];		 	/* x */
-					sections[sel[CM][CW] - 1][1] = sections[sel[CM][CW]][1] + sections[sel[CM][CW]][3]; 	/* y */
-					sections[sel[CM][CW] - 1][2] = sections[sel[CM][CW]][2];			/* width */
-					sections[sel[CM][CW] - 1][3] = sections[sel[CM][CW]][3];			/* height */
-				}
-			}
-		}
-	}
-	else if(args[0] == 2){
-		switch(args[1]){
-			case 0 :
-				/* <- width */
-				sections[sel[CM][CW]][2] -= 20;
-				break;
-			case 1 :
-				/* width -> */
-				sections[sel[CM][CW]][2] += 20;
-				break;
-		}
-	}
-	
-
-	for(int i = 0; i < arrSize(workspace[CM][CW]); i++){
-		FITSECTION(dpy, workspace[CM][CW][i], sections[i]);
-	}
 }
 
 /* Switch window */
