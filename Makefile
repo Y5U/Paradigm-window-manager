@@ -1,8 +1,8 @@
 release: pwm.c pwm.h config.h
-	cc pwm.c -O3 -lX11 -lXrandr -lXinerama -lpthread -o pwm
+	cc pwm.c -O3 -lX11 -lXrandr -lXinerama -o pwm
 
 debug: pwm.c pwm.h config.h
-	cc pwm.c -D DEBUG -lX11 -lXrandr -lXinerama -lpthread -Wall -Wextra -o pwm
+	cc pwm.c -D DEBUG -lX11 -lXrandr -lXinerama -Wall -Wextra -o pwm
 
 install:
 	cp pwm /usr/bin

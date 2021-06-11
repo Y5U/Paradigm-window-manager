@@ -3,9 +3,7 @@
 #include <X11/extensions/Xrandr.h>
 #include <X11/keysym.h>
 #include <stdbool.h>
-#include <pthread.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
 #include <stdio.h>
 
@@ -538,6 +536,5 @@ main(void)
 		else { printf("not command mode\n"); }
 		#endif
 	}
-	pthread_exit(NULL);
 	return 0;
 }
