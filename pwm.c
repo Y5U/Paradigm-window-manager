@@ -118,7 +118,7 @@ checkWindows()
 }
 
 void
-SWMonitor(int arrs[10])
+SWMonitor(int args[2])
 {
 	/* arrs[0] = left(0), right(1) */
 
@@ -126,7 +126,7 @@ SWMonitor(int arrs[10])
 	if(nMonitors == 1)
 		return;
 
-	if(arrs[0] == 0){
+	if(args[0] == 0){
 		if((CM -= 1) > 0){
 			if(workspace[CM][CW][0] != 0 && workspace[CM][CW][0] != 1){
 				XSetInputFocus(dpy, workspace[CM][CW][sel[CM][CW]], RevertToNone, CurrentTime); 
@@ -136,7 +136,7 @@ SWMonitor(int arrs[10])
 		}
 		else CM = 0;
 	}
-	else if(arrs[0] == 1) {
+	else if(args[0] == 1) {
 		if((CM += 1) < nMonitors){
 			if(workspace[CM][CW][0] != 0 && workspace[CM][CW][0] != 1){
 				XSetInputFocus(dpy, workspace[CM][CW][sel[CM][CW]], RevertToNone, CurrentTime); 
@@ -149,7 +149,7 @@ SWMonitor(int arrs[10])
 }
 
 void
-SWWorkspace()
+SWWorkspace(int args[2])
 { /* Switch Workspaces */
 	Window parent, root, *children;
 	unsigned int nChild;
@@ -160,18 +160,30 @@ SWWorkspace()
 	for(int i = 0; i < (int)nChild; i++){
 		XUnmapWindow(dpy, children[i]); }
 	/* switch workspace */
-	if((CW += 1) > WORKSPACELENGTH)
-		CW = 0;
+	if(args[0] == 0){	/* forward */
+		if((CW += 1) >= WORKSPACELENGTH)
+			CW = 0;
+	}
+	else if(args[0] == 1){ 	/* backwards */
+		if((CW -= 1) < 0)
+			CW = WORKSPACELENGTH - 1;
+	}
+	else if(args[0] == 2){ 	/* specific */
+		CW = args[1];
+	}
 	/* show all the windows on the current workspace */
 	for(int i = 0; i < arrSize(workspace[CM][CW]); i++){
 		XMapWindow(dpy, workspace[CM][CW][i]); }
 	/* set focus to the selected window in the current workspace */
 	if(workspace[CM][CW][0] != 0 && workspace[CM][CW][0] != 1)
 		XSetInputFocus(dpy, workspace[CM][CW][sel[CM][CW]], RevertToNone, CurrentTime);
+	#ifdef DEBUG
+	printf("workspace = %d\n", CW);
+	#endif
 }
 
 void
-Tile(int args[10]) 
+Tile(int args[2]) 
 {
 	Window parent, root, *children;
 	unsigned int nChild;
@@ -289,7 +301,7 @@ SWWindow(void)
 }
 
 void
-MRWindow(int args[10]) /* move resize window */
+MRWindow(int args[2]) /* move resize window */
 {
 	/* args[0] = resize(0), or move(1), args[1] = left(0), right(1), up(2), down(3) */
 	int rev;
@@ -376,7 +388,7 @@ ExitCommandMode()
 }
 
 void
-spawn(int args[10])
+spawn(int args[2])
 {
 	switch(args[0]){
 		case 0:
@@ -415,7 +427,7 @@ fullscreen(void)
 }
 
 void
-killW(int args[10])
+killW(int args[2])
 {
 	Window parent, root, focused, *children;
 	int revert;
