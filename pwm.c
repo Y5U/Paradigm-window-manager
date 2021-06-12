@@ -110,11 +110,6 @@ checkWindows()
 		}
 	}
 
-	XFree((void *)parent);
-	XFree((void *)root);
-	XFree((void *)children);
-	XFree((void *)focused);
-
 	/* to protect from freezing when all windows are killed */
 	if(arrSize(workspace[CM][CW]) <= 1)
 		XSetInputFocus(dpy, DefaultRootWindow(dpy), RevertToParent, CurrentTime);
@@ -185,9 +180,6 @@ SWWorkspace(int args[2])
 	#ifdef DEBUG
 	printf("workspace = %d\n", CW);
 	#endif
-	XFree((void *)parent);
-	XFree((void *)root);
-	XFree((void *)children);
 }
 
 void
@@ -261,9 +253,6 @@ Tile(int args[2])
 			}
 		}
 	} 
-	XFree((void *)parent);
-	XFree((void *)root);
-	XFree((void *)children);
 }
 
 /*void
@@ -301,10 +290,6 @@ SWWindow(void)
 		if(attrs.map_state == 2 && whatMonitor(workspace[CM][CW][sel[CM][CW]]) == CM)
 			XSetInputFocus(dpy, workspace[CM][CW][sel[CM][CW]], RevertToNone, CurrentTime);
 	}
-
-	XFree((void *)parent);
-	XFree((void *)root);
-	XFree((void *)children);
 
 	/* display notification ontop of focused window */
 	#if notifWP  ==  0
@@ -383,7 +368,6 @@ MRWindow(int args[2])
 				break;
 		}
 	}
-	XFree((void *)focused);
 }
 
 void
@@ -445,7 +429,6 @@ fullscreen(void)
 			screens[XScreenNumberOfScreen(attrs.screen)].height - BARH); */
 		XMoveResizeWindow(dpy, focused, CMX,  CMY, CMW, CMH);
 
-		XFree((void *)focused);
 	}
 	else if(arrSize(workspace[CM][CW]) == 1){
 		XMoveResizeWindow(dpy, workspace[CM][CW][0], CMX,  CMY, CMW, CMH);
@@ -480,11 +463,6 @@ killW(int args[2])
 		/* to protect from freezing when all windows are killed */
 		if(arrSize(workspace[CM][CW]) <= 1)
 			XSetInputFocus(dpy, DefaultRootWindow(dpy), RevertToParent, CurrentTime);
-
-		XFree((void *)parent);
-		XFree((void *)root);
-		XFree((void *)focused);
-		XFree((void *)children);
 	}
 	/* kill all windows in the current workspace[CM] */
 	else if(args[0] == 1){
