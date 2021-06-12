@@ -80,5 +80,5 @@ static Key keys[] = {
 	{ NONE,		XK_z,		killW,			{ 0 } }, /* kill the focused window */
 	{ CTRL,		XK_z,		killW,			{ 1 } }, /* kill all windows in the current Workspace*/
 	{ SHIFT|CTRL,	XK_z,		killW,			{ 2 } }, /* kill all windows in all workspaces*/
-	{ NONE,		XK_c,		killW,			{ 3 } }, /* exit window manager */
+	{ SHIFT,		XK_c,		killW,			{ 3 } }, /* exit window manager */
 };

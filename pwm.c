@@ -110,6 +110,11 @@ checkWindows()
 		}
 	}
 
+	XFree((void *)parent);
+	XFree((void *)root);
+	XFree((void *)children);
+	XFree((void *)focused);
+
 	/* to protect from freezing when all windows are killed */
 	if(arrSize(workspace[CM][CW]) <= 1)
 		XSetInputFocus(dpy, DefaultRootWindow(dpy), RevertToParent, CurrentTime);
@@ -172,14 +177,17 @@ SWWorkspace(int args[2])
 		CW = args[1];
 	}
 	/* show all the windows on the current workspace */
-	for(int i = 0; i < arrSize(workspace[CM][CW]); i++){
-		XMapWindow(dpy, workspace[CM][CW][i]); }
+	for(int i = 0; i < arrSize(workspace[CM][CW]); i++)
+		XMapWindow(dpy, workspace[CM][CW][i]);
 	/* set focus to the selected window in the current workspace */
 	if(workspace[CM][CW][0] != 0 && workspace[CM][CW][0] != 1)
 		XSetInputFocus(dpy, workspace[CM][CW][sel[CM][CW]], RevertToNone, CurrentTime);
 	#ifdef DEBUG
 	printf("workspace = %d\n", CW);
 	#endif
+	XFree((void *)parent);
+	XFree((void *)root);
+	XFree((void *)children);
 }
 
 void
@@ -190,6 +198,7 @@ Tile(int args[2])
 	XWindowAttributes attrs;
 
 	checkWindows();
+
 	Window windows[WINDOWLENGTH];
 	memcpy(windows, workspace[CM][CW], WINDOWLENGTH);
 
@@ -252,12 +261,19 @@ Tile(int args[2])
 			}
 		}
 	} 
+	XFree((void *)parent);
+	XFree((void *)root);
+	XFree((void *)children);
 }
 
-/* Switch window */
+/*void
+flipWindow(int args[2]){
+	
+} */
+
 void
 SWWindow(void)
-{
+{ /* Switch window */
 	if(arrSize(workspace[CM][CW]) < 1)
 			return;
 	checkWindows();
@@ -286,6 +302,10 @@ SWWindow(void)
 			XSetInputFocus(dpy, workspace[CM][CW][sel[CM][CW]], RevertToNone, CurrentTime);
 	}
 
+	XFree((void *)parent);
+	XFree((void *)root);
+	XFree((void *)children);
+
 	/* display notification ontop of focused window */
 	#if notifWP  ==  0
 	XMoveWindow(dpy, notifW, attrs.x, attrs.y);
@@ -304,8 +324,8 @@ SWWindow(void)
 }
 
 void
-MRWindow(int args[2]) /* move resize window */
-{
+MRWindow(int args[2]) 
+{ /* move resize window */
 	/* args[0] = resize(0), or move(1), args[1] = left(0), right(1), up(2), down(3) */
 	int rev;
 	Window focused;
@@ -363,6 +383,7 @@ MRWindow(int args[2]) /* move resize window */
 				break;
 		}
 	}
+	XFree((void *)focused);
 }
 
 void
@@ -423,6 +444,8 @@ fullscreen(void)
 			screens[XScreenNumberOfScreen(attrs.screen)].y_org + BARH, screens[XScreenNumberOfScreen(attrs.screen)].width, 
 			screens[XScreenNumberOfScreen(attrs.screen)].height - BARH); */
 		XMoveResizeWindow(dpy, focused, CMX,  CMY, CMW, CMH);
+
+		XFree((void *)focused);
 	}
 	else if(arrSize(workspace[CM][CW]) == 1){
 		XMoveResizeWindow(dpy, workspace[CM][CW][0], CMX,  CMY, CMW, CMH);
@@ -433,8 +456,8 @@ void
 killW(int args[2])
 {
 	Window parent, root, focused, *children;
+	unsigned int nChild;
 	int revert;
-	unsigned int tmp2;
 
 
 	/* kill focused window */
@@ -445,10 +468,10 @@ killW(int args[2])
 			if(checkArr(workspace[CM][CW], focused, arrSize(workspace[CM][CW]))){
 				XKillClient(dpy, focused);
 				
-				XQueryTree(dpy, DefaultRootWindow(dpy), &root, &parent, &children, &tmp2);
+				XQueryTree(dpy, DefaultRootWindow(dpy), &root, &parent, &children, &nChild);
 			}
 
-			if(checkArr(children, workspace[CM][CW][0 ^ 1], tmp2))
+			if(checkArr(children, workspace[CM][CW][0 ^ 1], nChild))
 				XSetInputFocus(dpy, workspace[CM][CW][0 ^ 1], RevertToNone, CurrentTime);
 		}
 		else if(arrSize(workspace[CM][CW]) == 1)
@@ -457,6 +480,11 @@ killW(int args[2])
 		/* to protect from freezing when all windows are killed */
 		if(arrSize(workspace[CM][CW]) <= 1)
 			XSetInputFocus(dpy, DefaultRootWindow(dpy), RevertToParent, CurrentTime);
+
+		XFree((void *)parent);
+		XFree((void *)root);
+		XFree((void *)focused);
+		XFree((void *)children);
 	}
 	/* kill all windows in the current workspace[CM] */
 	else if(args[0] == 1){
