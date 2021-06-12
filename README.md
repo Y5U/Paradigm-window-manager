@@ -4,7 +4,7 @@ Paradigm window manager (pwm) is a keyboard only tiling and floating window mana
 # Compile & install
 ```
 $ git clone https://github.com/Y5U/Paradigm-window-manager.git
-$ cd Paradigm-window-manager
+$ cd paradigm-window-manager
 $ make
 # make install
 ```
