@@ -7,7 +7,6 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "pwm.h"
 #include "config.h"
 
 /* macros */
@@ -36,6 +35,13 @@ XineramaScreenInfo 	*screens;
 #define CMW	screens[CM].width 		/* Current Monitor height */
 #define CMX	screens[CM].x_org 		/* Current Monitor top left corner X coordinate */
 #define CMY	screens[CM].y_org 		/* Current Monitor top left corner Y coordinate */
+
+typedef struct {
+        unsigned int state; /* modifier keys */
+        KeySym keysym;
+        void (*func)(int args[10]);
+        int args[10];
+} Key;
 
 int
 arrSize(long unsigned int arr[])
