@@ -90,15 +90,16 @@ checkWindows()
 			XMoveResizeWindow(dpy, children[nChild - 1], CMX, CMY, CMW, CMH);
 	}
 
+	int wLength = arrSize(workspace[CM][CW]);
 	/* remove closed windows from workspace */
-	for(int i = 0; i < arrSize(workspace[CM][CW]); i++){
+	for(int i = 0; i < wLength; i++){
 		if(!checkArr(children, workspace[CM][CW][i], nChild)){
 			for(int n = 0; n < WINDOWLENGTH - 1; n++){
 				workspace[CM][CW][n] = workspace[CM][CW][n + 1];
 			}
 		}
 	}
-
+	
 	/* add open windows to workspace */
 	for(int i = 0; i < (int)nChild; i++){
 		if(children[i] != notifW && !checkArr(workspace[CM][CW ^ 1], children[i], WINDOWLENGTH) && 
@@ -172,7 +173,8 @@ SWWorkspace(int args[2])
 		CW = args[1];
 	}
 	/* show all the windows on the current workspace */
-	for(int i = 0; i < arrSize(workspace[CM][CW]); i++)
+	int wLength = arrSize(workspace[CM][CW]);
+	for(int i = 0; i < wLength; i++)
 		XMapWindow(dpy, workspace[CM][CW][i]);
 	/* set focus to the selected window in the current workspace */
 	if(workspace[CM][CW][0] != 0 && workspace[CM][CW][0] != 1)
@@ -196,7 +198,8 @@ Tile(int args[2])
 
 	XQueryTree(dpy, DefaultRootWindow(dpy), &root, &parent, &children, &nChild);
 
-	for(int i = 0; i < arrSize(windows) - 1; i++){
+	int wLength = arrSize(windows) - 1;
+	for(int i = 0; i < wLength; i++){
 		if(checkArr(children, windows[i], nChild)){
 			XGetWindowAttributes(dpy, windows[i], &attrs);
 			if(attrs.map_state != 2){
@@ -234,7 +237,7 @@ Tile(int args[2])
 	}
 	/* horizontal */
 	else if(args[0] == 1){
-		for(int i = 0; i < arrSize(workspace[CM][CW]); i++) {
+		for(int i = 0; i < wLength; i++) {
 			XGetWindowAttributes(dpy, workspace[CM][CW][i], &attrs);
 			if(attrs.map_state == 2){
 				XMoveResizeWindow(dpy, workspace[CM][CW][i], SECTION(CMW, 
@@ -244,7 +247,7 @@ Tile(int args[2])
 	}
 	/* vertical */
 	else if(args[0] == 2){
-		for(int i = 0; i < arrSize(workspace[CM][CW]); i++) {
+		for(int i = 0; i < wLength; i++) {
 			XGetWindowAttributes(dpy, workspace[CM][CW][i], &attrs);
 			if(attrs.map_state == 2){
 				XMoveResizeWindow(dpy, workspace[CM][CW][i], 0, SECTION(CMH,
