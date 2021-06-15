@@ -5,7 +5,10 @@ debug: pwm.c pwm.h config.h
 	cc pwm.c -D DEBUG -lX11 -lXrandr -lXinerama -Wall -Wextra -o pwm
 
 install:
-	cp pwm /usr/bin
+	cp pwm /usr/local/bin
+
+uninstall:
+	rm -f /usr/local/bin/pwm
 
 clean:
 	rm -f pwm
